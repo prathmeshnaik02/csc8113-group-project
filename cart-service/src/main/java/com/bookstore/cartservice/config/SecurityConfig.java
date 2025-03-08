@@ -12,13 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Configuration
 public class SecurityConfig {
-
-    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService customUserDetailsService;
@@ -35,7 +31,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // 提高安全性
+        return new BCryptPasswordEncoder(12); // 12位加密安全性高
     }
 
     @Bean
@@ -43,8 +39,8 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/auth/**")) // 仅对 /auth/** 关闭 CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/cart/**").hasRole("USER") //  仅 USER 角色可以访问购物车
+                        .requestMatchers("/auth/**").permitAll() // 允许 /auth/login 和 /auth/register
+                        .requestMatchers("/cart/**").hasRole("USER") // 仅 USER 角色访问购物车
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -52,6 +48,8 @@ public class SecurityConfig {
                 .build();
     }
 }
+
+
 
 
 

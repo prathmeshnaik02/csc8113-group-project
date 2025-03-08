@@ -3,12 +3,19 @@ package com.bookstore.cartservice.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
-@Table(name = "users") //  确保表名匹配数据库
+@Table(name = "users")
 @Getter
 @Setter
-public class User {
+public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,17 +27,14 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // 角色字段
+    private String role; // 存储角色信息
 
-    //  需要无参构造函数（JPA 需要）
     public User() {}
 
-    //  关键修改：添加 ID 作为参数的构造函数
     public User(Long id) {
         this.id = id;
     }
 
-    //  修正 `setRole()` 逻辑，避免重复添加 `ROLE_`
     public void setRole(String role) {
         if (!role.startsWith("ROLE_")) {
             this.role = "ROLE_" + role;
@@ -38,7 +42,34 @@ public class User {
             this.role = role;
         }
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
+
+
 
 
 
