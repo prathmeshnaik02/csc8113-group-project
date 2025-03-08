@@ -24,6 +24,8 @@ spec:
           env:
             - name: DATABASE_URL
               value: "postgresql://postgres:090807@postgres:5432/CSC8113_GroupProject"
+          ports:
+            - containerPort: 8000
           # envFrom:
           #   - configMapRef:
           #       name: bookstore-config

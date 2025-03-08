@@ -51,7 +51,7 @@ spec:
                   name: bookstore-secrets
                   key: DB_PASSWORD
           ports:
-            - containerPort: 8080
+            - containerPort: 8001
 
 ---
 apiVersion: v1
@@ -64,6 +64,6 @@ spec:
     app: cartservice
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
+      port: 8001
+      targetPort: 8001
   type: ClusterIP
