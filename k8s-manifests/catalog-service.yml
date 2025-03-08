@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-deployment
+  namespace: bookstore
+  labels:
+    app: catalog-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-service
+  template:
+    metadata:
+      labels:
+        app: catalog-service
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: catalog-service
+          image: prathmeshnaiknu/csc8113-group8:catalog-service
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:090807@postgres:5432/CSC8113_GroupProject"
+          # envFrom:
+          #   - configMapRef:
+          #       name: bookstore-config
+          #   - secretRef:
+          #       name: bookstore-secrets
+          # env:
+          #   - name: DB_HOST
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: bookstore-config
+          #         key: DB_HOST
+          #   - name: REDIS_HOST
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: bookstore-config
+          #         key: REDIS_HOST
+          #   - name: JWT_SECRET
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: bookstore-secrets
+          #         key: JWT_SECRET
+          #   - name: DB_USER
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: bookstore-secrets
+          #         key: DB_USER
+          #   - name: DB_PASSWORD
+          #     valueFrom:
+          #       secretKeyRef:
+          #         name: bookstore-secrets
+          #         key: DB_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+  namespace: bookstore
+  labels:
+    app: catalog-service
+spec:
+  selector:
+    app: catalog-service
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
