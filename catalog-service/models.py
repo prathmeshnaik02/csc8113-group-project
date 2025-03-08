@@ -1,9 +1,9 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, ARRAY
 from database import Base
+from sqlalchemy import ARRAY, Boolean, Column, Float, ForeignKey, Integer, String
 
 
 class BookInventory(Base):
-    __tablename__ = "bookInventory"
+    __tablename__ = "books"
 
     isbn = Column(String, primary_key=True, index=True)
     title = Column(String, nullable=False, index=True)

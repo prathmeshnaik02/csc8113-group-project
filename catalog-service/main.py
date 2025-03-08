@@ -1,9 +1,12 @@
-from fastapi import FastAPI, HTTPException, Query, Body, Depends
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Union
-from sqlalchemy.orm import Session
-from models import BookInventory
+from typing import Dict, List, Optional, Union
+
+import bookRecords
+import createTable
 from database import get_db
+from fastapi import Body, Depends, FastAPI, HTTPException, Query
+from models import BookInventory
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 # from database import get_db, engine  # Import the database session dependency
 # import models
@@ -45,9 +48,7 @@ def get_books(
     genre: Optional[str] = Query(None),
     in_stock: Optional[bool] = Query(None),
     min_rating: Optional[float] = Query(None),
-    sort_by: Optional[str] = Query(
-        None, pattern="^(title|author|pages|published|price|rating)$"
-    ),
+    sort_by: Optional[str] = Query(None, pattern="^(title|author|pages|published|price|rating)$"),
     order: Optional[str] = Query("asc", pattern="^(asc|desc)$"),
     db: Session = Depends(get_db),
 ):
@@ -78,9 +79,7 @@ def get_books(
     if sort_by:
         reverse = order == "desc"
         query = query.order_by(
-            getattr(BookInventory, sort_by).desc()
-            if reverse
-            else getattr(BookInventory, sort_by)
+            getattr(BookInventory, sort_by).desc() if reverse else getattr(BookInventory, sort_by)
         )
 
     books = query.all()
@@ -179,9 +178,7 @@ def partial_update_book(
         if not isinstance(valid_fields["rating"], (int, float)):
             raise HTTPException(status_code=400, detail="Rating must be a number")
         if not (0.0 <= valid_fields["rating"] <= 5.0):
-            raise HTTPException(
-                status_code=400, detail="Rating must be between 0 and 5"
-            )
+            raise HTTPException(status_code=400, detail="Rating must be between 0 and 5")
 
     # Update only the valid fields
     for key, value in valid_fields.items():
@@ -214,14 +211,10 @@ def delete_book(isbn: str, db: Session = Depends(get_db)):
 @app.post("/books", response_model=Book)
 def add_book(book: Book, db: Session = Depends(get_db)):
     # Check if a book already exists
-    existing_book = (
-        db.query(BookInventory).filter(BookInventory.isbn == book.isbn).first()
-    )
+    existing_book = db.query(BookInventory).filter(BookInventory.isbn == book.isbn).first()
 
     if existing_book:
-        raise HTTPException(
-            status_code=400, detail="Book with this ISBN already exists"
-        )
+        raise HTTPException(status_code=400, detail="Book with this ISBN already exists")
 
     # Create a new book entry in the database
     new_book = BookInventory(

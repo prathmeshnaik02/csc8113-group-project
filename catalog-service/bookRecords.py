@@ -1,6 +1,6 @@
-from sqlalchemy.orm import Session
-from database import get_db
 import models
+from database import get_db
+from sqlalchemy.orm import Session
 
 books = [
     {
@@ -85,9 +85,7 @@ def insert_or_update_books(db: Session):
     for book in books:
 
         existing_book = (
-            db.query(models.BookInventory)
-            .filter(models.BookInventory.isbn == book["isbn"])
-            .first()
+            db.query(models.BookInventory).filter(models.BookInventory.isbn == book["isbn"]).first()
         )
 
         if existing_book:
@@ -127,12 +125,7 @@ def insert_or_update_books(db: Session):
     db.commit()
 
 
-def main():
-    db = next(get_db())
-    insert_or_update_books(db)
+db = next(get_db())
+insert_or_update_books(db)
 
-    print("Books have been inserted or updated successfully.")
-
-
-if __name__ == "__main__":
-    main()
+print("Books have been inserted or updated successfully.")
