@@ -1,11 +1,13 @@
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float, ARRAY
 from database import Base
-from sqlalchemy import ARRAY, Boolean, Column, Float, ForeignKey, Integer, String
 
 
 class BookInventory(Base):
+    # __tablename__ = "bookInventory"
     __tablename__ = "books"
 
-    isbn = Column(String, primary_key=True, index=True)
+    # isbn = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False, index=True)
     subtitle = Column(String, nullable=True)
     author = Column(String, nullable=False, index=True)
@@ -15,6 +17,7 @@ class BookInventory(Base):
     description = Column(String, nullable=False)
     price = Column(Float, nullable=False, index=True)
     genre = Column(String, nullable=False, index=True)
-    stock_status = Column(String, nullable=False, index=True)
+    # stock_status = Column(String, nullable=False, index=True)
+    in_stock = Column(Integer, nullable=False, index=True)
     language = Column(String, nullable=False, index=True)
     rating = Column(Float, nullable=True, index=True)

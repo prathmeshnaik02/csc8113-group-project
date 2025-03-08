@@ -85,7 +85,9 @@ def insert_or_update_books(db: Session):
     for book in books:
 
         existing_book = (
-            db.query(models.BookInventory).filter(models.BookInventory.isbn == book["isbn"]).first()
+            db.query(models.BookInventory)
+            .filter(models.BookInventory.isbn == book["isbn"])
+            .first()
         )
 
         if existing_book:
