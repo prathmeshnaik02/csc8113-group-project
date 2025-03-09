@@ -3,10 +3,13 @@ import axios from 'axios';
 
 // Add item to cart
 const addToCart = (isbn) => {
-    // Hardcoded userId for testing (replace with real auth later)
-    const userId = "123";
+    const userId = "123"; // Hardcoded for testing
 
-    axios.post(`http://localhost:8080/cart?userId=${userId}&bookIsbn=${isbn}&quantity=1`)
+    axios.post(
+        "http://localhost:8080/cart", // URL without query parameters
+        { userId, bookIsbn: isbn, quantity: 1 }, // JSON body
+        { headers: { "Content-Type": "application/json" } } // Required headers
+    )
         .then(() => alert('Item added to cart!'))
         .catch((err) => alert('Failed to add item: ' + err.message));
 };
