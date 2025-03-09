@@ -1,0 +1,50 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.navbar {
+  padding: 1rem;
+  background: #2c3e50; /* Updated color */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.App {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.book-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.book {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  width: 250px;
+  background: white; /* Added */
+  border-radius: 8px; /* Added */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added */
+}
+
+.cart {
+  padding: 1rem;
+}
