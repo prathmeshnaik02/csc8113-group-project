@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Navbar from './components/Navbar';
 import BookList from './components/BookList';
@@ -13,54 +13,91 @@ function App() {
 
     // Load books from catalog service
     useEffect(() => {
-        axios.get('http://localhost:8000/books')
+        const abortController = new AbortController();
+
+        axios.get('http://localhost:8000/books', {
+            signal: abortController.signal
+        })
             .then((res) => {
-                console.log("Books data:", res.data); // Debug: Check if data is received
+                console.log("Books data:", res.data);
                 setBooks(res.data);
             })
             .catch((err) => {
-                console.error("Failed to fetch books:", err); // Debug: Check for errors
+                if (!abortController.signal.aborted) {
+                    console.error("Failed to fetch books:", err);
+                }
             });
+
+        return () => abortController.abort();
     }, []);
 
-    const loadCart = () => {
-        axios.get(`http://localhost:8080/cart/${userId}`)
-            .then((cartRes) => {
-                const cartItems = cartRes.data;
+    // Load cart with cleanup
+    const loadCart = useCallback(async (abortController) => {
+        try {
+            const cartRes = await axios.get(`http://localhost:8080/cart/${userId}`, {
+                signal: abortController?.signal
+            });
+            const cartItems = cartRes.data;
 
-                // Fetch book details for each item in the cart
-                const bookRequests = cartItems.map(item =>
-                    axios.get(`http://localhost:8000/books/${item.bookIsbn}`)
-                );
+            // Fetch book details for each cart item
+            const enrichedCartItems = await Promise.all(
+                cartItems.map(async (item) => {
+                    const bookRes = await axios.get(
+                        `http://localhost:8000/books/${item.bookIsbn}`,
+                        { signal: abortController?.signal }
+                    );
+                    return { ...item, book: bookRes.data };
+                })
+            );
 
-                Promise.all(bookRequests)
-                    .then((bookResponses) => {
-                        const enrichedCartItems = cartItems.map((item, index) => ({
-                            ...item,
-                            book: bookResponses[index].data // Add book details
-                        }));
-                        setCartItems(enrichedCartItems);
-                    })
-                    .catch(console.error);
-            })
-            .catch(console.error);
+            setCartItems(enrichedCartItems);
+        } catch (err) {
+            if (!abortController?.signal.aborted) {
+                console.error("Failed to load cart:", err);
+            }
+        }
+    }, [userId]);
+
+    // Initial cart load with cleanup
+    useEffect(() => {
+        const abortController = new AbortController();
+        loadCart(abortController);
+        return () => abortController.abort();
+    }, [loadCart]);
+
+    // Add item to cart with cleanup
+    const addToCart = async (isbn) => {
+        const abortController = new AbortController();
+
+        try {
+            await axios.post(
+                "http://localhost:8080/cart",
+                { userId, bookIsbn: isbn, quantity: 1 },
+                {
+                    headers: { "Content-Type": "application/json" },
+                    signal: abortController.signal
+                }
+            );
+            await loadCart(abortController);
+            alert('Item added to cart!');
+        } catch (err) {
+            if (!abortController.signal.aborted) {
+                alert(`Error: ${err.response?.data || err.message}`);
+            }
+        }
+
+        return () => abortController.abort();
     };
 
-    // Initial cart load
-    useEffect(loadCart, []);
-
-    // Add item to cart
-    const addToCart = (isbn) => {
-        axios.post(
-            "http://localhost:8080/cart",
-            { userId, bookIsbn: isbn, quantity: 1 }, // Send as JSON body
-            { headers: { "Content-Type": "application/json" } } // Explicitly set headers
-        )
-            .then(() => {
-                loadCart();
-                alert('Item added to cart!');
-            })
-            .catch((err) => alert(`Error: ${err.response?.data || err.message}`));
+    // remove function
+    const removeFromCart = async (bookIsbn) => {
+        try {
+            await axios.delete(`http://localhost:8080/cart/${userId}/${bookIsbn}`);
+            await loadCart(); // Refresh cart after removal
+            alert('Item removed from cart!');
+        } catch (err) {
+            alert(`Error: ${err.response?.data || err.message}`);
+        }
     };
 
     return (
@@ -69,7 +106,7 @@ function App() {
                 <Navbar cartCount={cartItems.length} />
                 <Routes>
                     <Route path="/" element={<BookList books={books} addToCart={addToCart} />} />
-                    <Route path="/cart" element={<Cart items={cartItems} />} />
+                    <Route path="/cart" element={<Cart items={cartItems} removeFromCart={removeFromCart} />} />
                 </Routes>
             </div>
         </Router>

@@ -11,7 +11,7 @@ body {
 
 .navbar {
   padding: 1rem;
-  background: #2c3e50; /* Updated color */
+  background: #2c3e50;
   color: white;
   display: flex;
   justify-content: space-between;
@@ -40,11 +40,54 @@ body {
   border: 1px solid #ddd;
   padding: 1rem;
   width: 250px;
-  background: white; /* Added */
-  border-radius: 8px; /* Added */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cart-item h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.item-details {
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.remove-button {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  margin-top: 8px;
 }
 
 .cart {
-  padding: 1rem;
+  padding: 0.75rem;
+  max-width: 400px;
+}
+
+.remove-button {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.remove-button:hover {
+  background-color: #cc0000;
 }
