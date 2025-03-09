@@ -9,6 +9,8 @@ kubectl apply -f configmap.yml
 kubectl apply -f secrets.yml
 
 # deploy postgres and redis databases
+kubectl create configmap postgres-init-script \
+    --from-file=./postgres/init.sql -n bookstore
 kubectl apply -f postgres.yml
 kubectl apply -f redis.yml
 
