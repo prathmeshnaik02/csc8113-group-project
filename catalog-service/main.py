@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, Query, Body, Depends
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Union
-from sqlalchemy.orm import Session
-from models import BookInventory
+from typing import Dict, List, Optional, Union
+
 from database import get_db
+from fastapi import Body, Depends, FastAPI, HTTPException, Query
+from models import BookInventory
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 # from database import get_db, engine  # Import the database session dependency
 # import models
@@ -17,18 +18,18 @@ class Book(BaseModel):
     # isbn: str
     id: int
     title: str
-    subtitle: Optional[str]
-    author: str
-    published: str
-    publisher: str
-    pages: int
-    description: str
+    # subtitle: Optional[str]
+    # author: str
+    # published: str
+    # publisher: str
+    # pages: int
+    # description: str
     price: float
-    genre: str
+    # genre: str
     # stock_status: str
-    in_stock: int
-    language: str
-    rating: Optional[float]
+    stock: int
+    # language: str
+    # rating: Optional[float]
     # in_stock: bool
 
 
@@ -47,9 +48,7 @@ def get_books(
     genre: Optional[str] = Query(None),
     in_stock: Optional[bool] = Query(None),
     min_rating: Optional[float] = Query(None),
-    sort_by: Optional[str] = Query(
-        None, pattern="^(title|author|pages|published|price|rating)$"
-    ),
+    sort_by: Optional[str] = Query(None, pattern="^(title|author|pages|published|price|rating)$"),
     order: Optional[str] = Query("asc", pattern="^(asc|desc)$"),
     db: Session = Depends(get_db),
 ):
@@ -84,9 +83,7 @@ def get_books(
     if sort_by:
         reverse = order == "desc"
         query = query.order_by(
-            getattr(BookInventory, sort_by).desc()
-            if reverse
-            else getattr(BookInventory, sort_by)
+            getattr(BookInventory, sort_by).desc() if reverse else getattr(BookInventory, sort_by)
         )
 
     books = query.all()
@@ -161,18 +158,14 @@ def partial_update_book(
         if not isinstance(valid_fields["in_stock"], int):
             raise HTTPException(status_code=400, detail="in_stock must be an integer")
         if valid_fields["in_stock"] < 0:
-            raise HTTPException(
-                status_code=400, detail="in_stock must be a non-negative integer"
-            )
+            raise HTTPException(status_code=400, detail="in_stock must be a non-negative integer")
 
     # Check `rating` is within the valid range (0-5) if it's being updated
     if "rating" in valid_fields:
         if not isinstance(valid_fields["rating"], (int, float)):
             raise HTTPException(status_code=400, detail="Rating must be a number")
         if not (0.0 <= valid_fields["rating"] <= 5.0):
-            raise HTTPException(
-                status_code=400, detail="Rating must be between 0 and 5"
-            )
+            raise HTTPException(status_code=400, detail="Rating must be between 0 and 5")
 
     for key, value in valid_fields.items():
         setattr(book, key, value)
@@ -204,14 +197,10 @@ def delete_book(id: int, db: Session = Depends(get_db)):
 @app.post("/books", response_model=Book)
 def add_book(book: Book, db: Session = Depends(get_db)):
 
-    existing_book = (
-        db.query(BookInventory).filter(BookInventory.title == book.title).first()
-    )
+    existing_book = db.query(BookInventory).filter(BookInventory.title == book.title).first()
 
     if existing_book:
-        raise HTTPException(
-            status_code=400, detail="Book with this title already exists"
-        )
+        raise HTTPException(status_code=400, detail="Book with this title already exists")
 
     new_book = BookInventory(
         id=book.id,
