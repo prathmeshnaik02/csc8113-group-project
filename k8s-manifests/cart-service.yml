@@ -13,16 +13,18 @@ spec:
       labels:
         app: cartservice
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: cartservice
           image: prathmeshnaiknu/csc8113-group8:cart-service
           imagePullPolicy: Always
           resources:
             requests:
-              cpu: "100m"  # 0.1
+              cpu: "100m"
               memory: "128Mi"
             limits:
-              cpu: "500m"  # 0.5
+              cpu: "500m"
               memory: "512Mi"
           envFrom:
             - configMapRef:
@@ -32,22 +34,31 @@ spec:
           env:
             - name: DB_HOST
               valueFrom:
-                secretKeyRef:
-                  name: bookstore-secrets
-                  key: db_host
+                configMapKeyRef:
+                  name: bookstore-config
+                  key: DB_HOST
             - name: REDIS_HOST
               valueFrom:
-                secretKeyRef:
-                  name: bookstore-secrets
-                  key: redis_host
+                configMapKeyRef:
+                  name: bookstore-config
+                  key: REDIS_HOST
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: bookstore-secrets
-                  key: jwt_secret
+                  key: JWT_SECRET
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bookstore-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstore-secrets
+                  key: DB_PASSWORD
           ports:
             - containerPort: 8001
-
 
 ---
 apiVersion: v1
