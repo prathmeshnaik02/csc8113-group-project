@@ -1,15 +1,12 @@
 package com.bookstore.cartservice.repository;
 
-import com.bookstore.cartservice.model.Cart;
+import com.bookstore.cartservice.model.CartItem;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
-import java.util.Optional;
+public interface CartRepository extends JpaRepository<CartItem, Long> {
+    List<CartItem> findByUserId(String userId);
+    CartItem findByUserIdAndBookIsbn(String userId, String bookIsbn);
 
-public interface CartRepository extends JpaRepository<Cart, Long> {
-
-    Optional<Cart> findByUserId(Long userId);
-
-    @Transactional
-    void deleteByUserId(Long userId); //  修复 `deleteByUserId()`
+    void deleteByUserIdAndBookIsbn(String userId, String bookIsbn);
 }

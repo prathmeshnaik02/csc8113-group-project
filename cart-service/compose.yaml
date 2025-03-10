@@ -1,13 +1,13 @@
 services:
   postgres:
-    image: "postgres:latest"
+    image: 'postgres:latest'
     environment:
-      - "POSTGRES_DB=CSC8113_GroupProject"
-      - "POSTGRES_PASSWORD=090807"
-      - "POSTGRES_USER=postgres"
+      - 'POSTGRES_DB=postgres'
+      - 'POSTGRES_PASSWORD=Amey1111'
+      - 'POSTGRES_USER=myuser'
     ports:
-      - "5432"
+      - '5432'
   redis:
-    image: "redis:latest"
+    image: 'redis:latest'
     ports:
-      - "6379"
+      - '8001'
