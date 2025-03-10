@@ -1,20 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: cartservice-ingress
+  name: bookstore-frontend-ingress
   namespace: bookstore
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    kubernetes.io/ingress.class: "nginx"
 spec:
+  ingressClassName: "nginx"
   rules:
-    - host: cartservice.local
+    - host: bookstore.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: cartservice
+                name: frontend
                 port:
-                  number: 80
+                  number: 3000

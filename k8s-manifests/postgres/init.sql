@@ -5,60 +5,39 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS book (
-    id BIGSERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS book_inventory (
+    isbn VARCHAR(255) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255),
+    author VARCHAR(255) NOT NULL,
+    published VARCHAR(255) NOT NULL,
+    publisher VARCHAR(255) NOT NULL,
+    pages INTEGER NOT NULL,
+    description VARCHAR(255) NOT NULL,
     price DOUBLE PRECISION NOT NULL,
-    stock INTEGER NOT NULL,
-    version INTEGER NOT NULL DEFAULT 1
-);
-
-CREATE TABLE IF NOT EXISTS cart (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    quantity INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    genre VARCHAR(255) NOT NULL,
+    stock_status VARCHAR(255) NOT NULL,
+    language VARCHAR(255) NOT NULL,
+    rating DOUBLE PRECISION NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS cart_item (
     id BIGSERIAL PRIMARY KEY,
-    cart_id BIGINT NOT NULL,
-    book_id BIGINT NOT NULL,
+    book_isbn VARCHAR(255),
     quantity INTEGER NOT NULL,
-    FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
+    user_id VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS orders (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    total_price DOUBLE PRECISION NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
-    version INTEGER NOT NULL DEFAULT 1,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+INSERT INTO
+  users (id, username, password, role)
+VALUES
+  (12345678, 'admin', '12345678', 'admin');
 
-CREATE TABLE IF NOT EXISTS order_item (
-    id BIGSERIAL PRIMARY KEY,
-    order_id BIGINT NOT NULL,
-    book_id BIGINT NOT NULL,
-    quantity INTEGER NOT NULL,
-    price DOUBLE PRECISION NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
-);
-
-BEGIN;
-
-INSERT INTO users (id, username, password, role) VALUES
-(12345678, 'admin', '12345678', 'admin');
-
-INSERT INTO book (id, title, price, stock, version) VALUES
-(1, 'The Great Adventure', 19.99, 20, 1),
-(2, 'Tech Innovations', 24.99, 0, 1),
-(3, 'Mystery of the Missing Diamond', 14.99, 30, 1),
-(4, 'The Lost World', 15.99, 53, 1),
-(5, 'Beyond the Horizon', 22.50, 324, 1);
-
-COMMIT;
+INSERT INTO
+  book_inventory (isbn, title, subtitle, author, published, publisher, pages, description, price, genre, stock_status, language, rating)
+VALUES
+  ('1', 'The Great Adventure', 'A Journey Through Time', 'John Doe', '2021', 'Adventure Press', 350, 'An epic story of adventure through historical events.', 19.99, 'Adventure', 'In Stock', 'English', 4.5),
+  ('2', 'Tech Innovations', 'The Future of Technology', 'Alice Johnson', '2022', 'TechWorld Publications', 250, 'An exploration of groundbreaking technologies changing the world.', 24.99, 'Technology', 'Out of Stock', 'English', 4.2),
+  ('3', 'Mystery of the Missing Diamond', NULL, 'Michael Lee', '2019', 'Mystery Books', 555, 'A thrilling mystery novel about a stolen diamond and the detective who seeks to recover it.', 14.99, 'Mystery', 'In Stock', 'English', 4.8),
+  ('4', 'The Lost World', 'Discoveries Beneath the Surface', 'Sarah Johnson', '2020', 'Mystery Press', 285, 'A thrilling tale of uncharted territories and the mysteries they hide.', 15.99, 'Adventure', 'Out of Stock', 'English', 4.3),
+  ('5', 'Beyond the Horizon', 'Exploring New Frontiers', 'Michael White', '2018', 'Explorer Books', 400, 'A gripping narrative of human exploration and discovery across the globe.', 22.50, 'Non-fiction', 'In Stock', 'English', 4.7);
