@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 books = [
     {
-        "id": 1,
+        "isbn": "1",
         "title": "The Great Adventure",
         "subtitle": "A Journey Through Time",
         "author": "John Doe",
@@ -14,12 +14,12 @@ books = [
         "description": "An epic story of adventure through historical events.",
         "price": 19.99,
         "genre": "Adventure",
-        "stock": 20,
+        "stock_status": "In Stock",
         "language": "English",
         "rating": 4.5,
     },
     {
-        "id": 2,
+        "isbn": "2",
         "title": "Tech Innovations",
         "subtitle": "The Future of Technology",
         "author": "Alice Johnson",
@@ -29,12 +29,12 @@ books = [
         "description": "An exploration of groundbreaking technologies changing the world.",
         "price": 24.99,
         "genre": "Technology",
-        "stock": 0,
+        "stock_status": "Out of Stock",
         "language": "English",
         "rating": 4.2,
     },
     {
-        "id": 3,
+        "isbn": "3",
         "title": "Mystery of the Missing Diamond",
         "subtitle": None,
         "author": "Michael Lee",
@@ -44,12 +44,12 @@ books = [
         "description": "A thrilling mystery novel about a stolen diamond and the detective who seeks to recover it.",
         "price": 14.99,
         "genre": "Mystery",
-        "stock": 20,
+        "stock_status": "In Stock",
         "language": "English",
         "rating": 4.8,
     },
     {
-        "id": 4,
+        "isbn": "4",
         "title": "The Lost World",
         "subtitle": "Discoveries Beneath the Surface",
         "author": "Sarah Johnson",
@@ -59,12 +59,12 @@ books = [
         "description": "A thrilling tale of uncharted territories and the mysteries they hide.",
         "price": 15.99,
         "genre": "Adventure",
-        "stock": 20,
+        "stock_status": "Out of Stock",
         "language": "English",
         "rating": 4.3,
     },
     {
-        "id": 5,
+        "isbn": "5",
         "title": "Beyond the Horizon",
         "subtitle": "Exploring New Frontiers",
         "author": "Michael White",
@@ -74,7 +74,7 @@ books = [
         "description": "A gripping narrative of human exploration and discovery across the globe.",
         "price": 22.50,
         "genre": "Non-fiction",
-        "stock": 0,
+        "stock_status": "In Stock",
         "language": "English",
         "rating": 4.7,
     },
@@ -85,37 +85,39 @@ def insert_or_update_books(db: Session):
     for book in books:
 
         existing_book = (
-            db.query(models.BookInventory).filter(models.BookInventory.id == book["id"]).first()
+            db.query(models.BookInventory).filter(models.BookInventory.isbn == book["isbn"]).first()
         )
 
         if existing_book:
+
             existing_book.title = book["title"]
-            # existing_book.subtitle = book["subtitle"]
-            # existing_book.author = book["author"]
-            # existing_book.published = book["published"]
-            # existing_book.publisher = book["publisher"]
-            # existing_book.pages = book["pages"]
-            # existing_book.description = book["description"]
+            existing_book.subtitle = book["subtitle"]
+            existing_book.author = book["author"]
+            existing_book.published = book["published"]
+            existing_book.publisher = book["publisher"]
+            existing_book.pages = book["pages"]
+            existing_book.description = book["description"]
             existing_book.price = book["price"]
-            # existing_book.genre = book["genre"]
-            existing_book.stock = book["stock"]
-            # existing_book.language = book["language"]
-            # existing_book.rating = book["rating"]
+            existing_book.genre = book["genre"]
+            existing_book.stock_status = book["stock_status"]
+            existing_book.language = book["language"]
+            existing_book.rating = book["rating"]
         else:
+
             db_book = models.BookInventory(
-                id=book["id"],
+                isbn=book["isbn"],
                 title=book["title"],
-                # subtitle=book["subtitle"],
-                # author=book["author"],
-                # published=book["published"],
-                # publisher=book["publisher"],
-                # pages=book["pages"],
-                # description=book["description"],
+                subtitle=book["subtitle"],
+                author=book["author"],
+                published=book["published"],
+                publisher=book["publisher"],
+                pages=book["pages"],
+                description=book["description"],
                 price=book["price"],
-                # genre=book["genre"],
-                stock=book["stock"],
-                # language=book["language"],
-                # rating=book["rating"],
+                genre=book["genre"],
+                stock_status=book["stock_status"],
+                language=book["language"],
+                rating=book["rating"],
             )
 
             db.add(db_book)

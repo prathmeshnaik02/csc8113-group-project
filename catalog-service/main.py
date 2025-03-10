@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Union
 
 from database import get_db
 from fastapi import Body, Depends, FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from models import BookInventory
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -12,24 +13,32 @@ from sqlalchemy.orm import Session
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Pydantic Model for Validation
 class Book(BaseModel):
-    # isbn: str
-    id: int
+    isbn: str
+    # id: int
     title: str
-    # subtitle: Optional[str]
-    # author: str
-    # published: str
-    # publisher: str
-    # pages: int
-    # description: str
+    subtitle: Optional[str]
+    author: str
+    published: str
+    publisher: str
+    pages: int
+    description: str
     price: float
-    # genre: str
-    # stock_status: str
-    stock: int
-    # language: str
-    # rating: Optional[float]
+    genre: str
+    stock_status: str
+    # in_stock: int
+    language: str
+    rating: Optional[float]
     # in_stock: bool
 
 
@@ -91,9 +100,9 @@ def get_books(
     return books
 
 
-@app.get("/books/{id}", response_model=Book)
-def get_book(id: int, db: Session = Depends(get_db)):
-    book = db.query(BookInventory).filter(BookInventory.id == id).first()
+@app.get("/books/{isbn}", response_model=Book)
+def get_book(isbn: int, db: Session = Depends(get_db)):
+    book = db.query(BookInventory).filter(BookInventory.isbn == str(isbn)).first()
     if book is None:
         raise HTTPException(status_code=404, detail="Book not found")
 
@@ -117,9 +126,9 @@ ALLOWED_UPDATE_FIELDS = {
 
 
 # Update specific fields of a book record
-@app.patch("/books/{id}")
+@app.patch("/books/{isbn}")
 def partial_update_book(
-    id: int,
+    isbn: int,
     book_update: Dict[str, Union[str, int, float]] = Body(
         ...,
         example={
@@ -139,7 +148,7 @@ def partial_update_book(
     ),
     db: Session = Depends(get_db),
 ):
-    book = db.query(BookInventory).filter(BookInventory.id == id).first()
+    book = db.query(BookInventory).filter(BookInventory.isbn == isbn).first()
 
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -180,9 +189,9 @@ def partial_update_book(
 
 
 # Delete a book by ISBN
-@app.delete("/books/{id}")
-def delete_book(id: int, db: Session = Depends(get_db)):
-    book = db.query(BookInventory).filter(BookInventory.id == id).first()
+@app.delete("/books/{isbn}")
+def delete_book(isbn: int, db: Session = Depends(get_db)):
+    book = db.query(BookInventory).filter(BookInventory.isbn == isbn).first()
 
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
@@ -203,7 +212,7 @@ def add_book(book: Book, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Book with this title already exists")
 
     new_book = BookInventory(
-        id=book.id,
+        isbn=book.isbn,
         title=book.title,
         subtitle=book.subtitle,
         author=book.author,

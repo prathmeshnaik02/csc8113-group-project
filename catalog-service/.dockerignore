@@ -1,0 +1,46 @@
+# ignore virtual environments
+venv/
+env/
+*.env
+
+# ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ignore other Python-related files
+*.db
+*.sqlite3
+
+# ignore log files
+*.log
+
+# ignore package manager files
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# ignore test files or directories (if not needed in production)
+tests/
+test/
+*.test.py
+*.spec.py
+
+# ignore build files
+build/
+dist/
+*.egg-info/
+.eggs/
+*.tar.gz
+*.whl
+
+# ignore any IDE or editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
