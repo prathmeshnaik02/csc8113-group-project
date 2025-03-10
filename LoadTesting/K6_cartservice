@@ -1,0 +1,37 @@
+import http from "k6/http";
+import { sleep, check } from "k6";
+import { Trend, Rate } from "k6/metrics";
+
+// 定义监控指标
+let responseTime = new Trend('response_time');
+let successRate = new Rate('success_rate');
+
+export let options = {
+  stages: [
+    { duration: "1m", target: 100 },  // 1分钟内增加到100用户
+    { duration: "2m", target: 300 },  // 2分钟内增加到300用户
+    { duration: "2m", target: 500 },  // 2分钟内增加到500用户
+    { duration: "3m", target: 500 },  // 3分钟保持500用户
+    { duration: "1m", target: 0 }     // 1分钟内降回0用户
+  ],
+  thresholds: {
+    http_req_duration: ["p(95)<500"],  // 95% 的请求必须小于500ms
+    success_rate: ["rate>0.95"],  // 成功率必须大于 95%
+  },
+};
+
+export default function () {
+  let res = http.get("http://catalog-service.bookstore.svc.cluster.local:8002/api/books");
+
+  // 记录指标
+  responseTime.add(res.timings.duration);
+  successRate.add(res.status === 200);
+
+  // 校验 HTTP 响应
+  check(res, {
+    "状态码 200": (r) => r.status === 200,
+    "响应时间 < 500ms": (r) => r.timings.duration < 500,
+  });
+
+  sleep(1);
+}
