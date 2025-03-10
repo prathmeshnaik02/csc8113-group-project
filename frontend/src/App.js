@@ -1,116 +1,135 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import Navbar from './components/Navbar';
-import BookList from './components/BookList';
-import Cart from './components/Cart';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import './App.css';
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import Navbar from "./components/Navbar";
+import BookList from "./components/BookList";
+import Cart from "./components/Cart";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import "./App.css";
 
 function App() {
-    const [books, setBooks] = useState([]);
-    const [cartItems, setCartItems] = useState([]);
-    const userId = "123"; // Hardcoded for demo
+	const [books, setBooks] = useState([]);
+	const [cartItems, setCartItems] = useState([]);
+	const userId = "123"; // Hardcoded for demo
 
-    // Load books from catalog service
-    useEffect(() => {
-        const abortController = new AbortController();
+	// Load books from catalog service
+	useEffect(() => {
+		const abortController = new AbortController();
 
-        axios.get('http://localhost:8000/books', {
-            signal: abortController.signal
-        })
-            .then((res) => {
-                console.log("Books data:", res.data);
-                setBooks(res.data);
-            })
-            .catch((err) => {
-                if (!abortController.signal.aborted) {
-                    console.error("Failed to fetch books:", err);
-                }
-            });
+		axios
+			.get("/api/catalog/books", {
+				signal: abortController.signal,
+			})
+			.then((res) => {
+				console.log("Books data:", res.data);
+				setBooks(res.data);
+			})
+			.catch((err) => {
+				if (!abortController.signal.aborted) {
+					console.error("Failed to fetch books:", err);
+				}
+			});
 
-        return () => abortController.abort();
-    }, []);
+		return () => abortController.abort();
+	}, []);
 
-    // Load cart with cleanup
-    const loadCart = useCallback(async (abortController) => {
-        try {
-            const cartRes = await axios.get(`http://localhost:8080/cart/${userId}`, {
-                signal: abortController?.signal
-            });
-            const cartItems = cartRes.data;
+	// Load cart with cleanup
+	const loadCart = useCallback(
+		async (abortController) => {
+			try {
+				const cartRes = await axios.get(`/api/cart/cart/${userId}`, {
+					signal: abortController?.signal,
+				});
+				const cartItems = cartRes.data;
 
-            // Fetch book details for each cart item
-            const enrichedCartItems = await Promise.all(
-                cartItems.map(async (item) => {
-                    const bookRes = await axios.get(
-                        `http://localhost:8000/books/${item.bookIsbn}`,
-                        { signal: abortController?.signal }
-                    );
-                    return { ...item, book: bookRes.data };
-                })
-            );
+				// Fetch book details for each cart item
+				const enrichedCartItems = await Promise.all(
+					cartItems.map(async (item) => {
+						const bookRes = await axios.get(`/api/catalog/books/${item.bookIsbn}`, {
+							signal: abortController?.signal,
+						});
+						return { ...item, book: bookRes.data };
+					})
+				);
 
-            setCartItems(enrichedCartItems);
-        } catch (err) {
-            if (!abortController?.signal.aborted) {
-                console.error("Failed to load cart:", err);
-            }
-        }
-    }, [userId]);
+				setCartItems(enrichedCartItems);
+			} catch (err) {
+				if (!abortController?.signal.aborted) {
+					console.error("Failed to load cart:", err);
+				}
+			}
+		},
+		[userId]
+	);
 
-    // Initial cart load with cleanup
-    useEffect(() => {
-        const abortController = new AbortController();
-        loadCart(abortController);
-        return () => abortController.abort();
-    }, [loadCart]);
+	// Initial cart load with cleanup
+	useEffect(() => {
+		const abortController = new AbortController();
+		loadCart(abortController);
+		return () => abortController.abort();
+	}, [loadCart]);
 
-    // Add item to cart with cleanup
-    const addToCart = async (isbn) => {
-        const abortController = new AbortController();
+	// Add item to cart with cleanup
+	const addToCart = async (isbn) => {
+		const abortController = new AbortController();
 
-        try {
-            await axios.post(
-                "http://localhost:8080/cart",
-                { userId, bookIsbn: isbn, quantity: 1 },
-                {
-                    headers: { "Content-Type": "application/json" },
-                    signal: abortController.signal
-                }
-            );
-            await loadCart(abortController);
-            alert('Item added to cart!');
-        } catch (err) {
-            if (!abortController.signal.aborted) {
-                alert(`Error: ${err.response?.data || err.message}`);
-            }
-        }
+		try {
+			await axios.post(
+				"/api/cart/cart",
+				{ userId, bookIsbn: isbn, quantity: 1 },
+				{
+					headers: { "Content-Type": "application/json" },
+					signal: abortController.signal,
+				}
+			);
+			await loadCart(abortController);
+			alert("Item added to cart!");
+		} catch (err) {
+			if (!abortController.signal.aborted) {
+				alert(`Error: ${err.response?.data || err.message}`);
+			}
+		}
 
-        return () => abortController.abort();
-    };
+		return () => abortController.abort();
+	};
 
-    // remove function
-    const removeFromCart = async (bookIsbn) => {
-        try {
-            await axios.delete(`http://localhost:8080/cart/${userId}/${bookIsbn}`);
-            await loadCart(); // Refresh cart after removal
-            alert('Item removed from cart!');
-        } catch (err) {
-            alert(`Error: ${err.response?.data || err.message}`);
-        }
-    };
+	// remove function
+	const removeFromCart = async (bookIsbn) => {
+		try {
+			await axios.delete(`/api/cart/cart/${userId}/${bookIsbn}`);
+			await loadCart(); // Refresh cart after removal
+			alert("Item removed from cart!");
+		} catch (err) {
+			alert(`Error: ${err.response?.data || err.message}`);
+		}
+	};
 
-    return (
-        <Router>
-            <div className="App">
-                <Navbar cartCount={cartItems.length} />
-                <Routes>
-                    <Route path="/" element={<BookList books={books} addToCart={addToCart} />} />
-                    <Route path="/cart" element={<Cart items={cartItems} removeFromCart={removeFromCart} />} />
-                </Routes>
-            </div>
-        </Router>
-    );
+	return (
+		<Router>
+			<div className="App">
+				<Navbar cartCount={cartItems.length} />
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<BookList
+								books={books}
+								addToCart={addToCart}
+							/>
+						}
+					/>
+					<Route
+						path="/cart"
+						element={
+							<Cart
+								items={cartItems}
+								removeFromCart={removeFromCart}
+							/>
+						}
+					/>
+				</Routes>
+			</div>
+		</Router>
+	);
 }
 
 export default App;
