@@ -24,7 +24,7 @@ USER spring:spring
 COPY --from=build /app/target/*.jar /app/app.jar
 
 # 暴露端口
-EXPOSE 8080
+EXPOSE 8001
 
 # 运行 Spring Boot 应用
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

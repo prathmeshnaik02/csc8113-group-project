@@ -12,7 +12,7 @@ import java.util.List;
 public class CartService {
     private final CartRepository cartRepository;
     private final RestTemplate restTemplate;
-    private final String catalogUrl = "http://localhost:8000/books/";
+    private final String catalogUrl = "http://catalog-service:8000/books/";
 
     public CartItem addToCart(String userId, String bookIsbn, int quantity) {
         // Verify book exists
