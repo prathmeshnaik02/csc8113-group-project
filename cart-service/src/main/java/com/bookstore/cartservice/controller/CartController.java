@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.bookstore.cartservice.dto.AddToCartRequest;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping("/cart")
@@ -38,5 +41,13 @@ public class CartController {
             @PathVariable String bookIsbn) {
         cartService.removeFromCart(userId, bookIsbn);
         return ResponseEntity.noContent().build();
+    }
+
+    // health API endpoint
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> healthCheck() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "ok");
+        return ResponseEntity.ok(response);
     }
 }
