@@ -24,4 +24,5 @@ kubectl apply -f frontend.yml
 # expose frontend and APIs outside cluster using Ingress
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
 kubectl apply -f frontend-ingress.yml
-kubectl apply -f api-ingress.yml
+kubectl apply -f catalog-ingress.yml
+kubectl apply -f cart-ingress.yml

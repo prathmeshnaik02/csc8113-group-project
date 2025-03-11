@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: bookstore-api-ingress
+  name: bookstore-api-cart-ingress
   namespace: bookstore
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
@@ -12,13 +12,6 @@ spec:
     - host: bookstore.local
       http:
         paths:
-          - path: /api/catalog/(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: catalog-service
-                port:
-                  number: 8000
           - path: /api/cart/(.*)
             pathType: ImplementationSpecific
             backend:
