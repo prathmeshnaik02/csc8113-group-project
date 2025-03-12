@@ -1,25 +1,29 @@
+# blue deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-deployment
+  name: catalog-blue
   namespace: bookstore
   labels:
     app: catalog-service
+    version: blue
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: catalog-service
+      version: blue
   template:
     metadata:
       labels:
         app: catalog-service
+        version: blue
     spec:
       imagePullSecrets:
         - name: regcred
       containers:
         - name: catalog-service
-          image: prathmeshnaiknu/csc8113-group8:catalog-service
+          image: prathmeshnaiknu/csc8113-group8:catalog-service-v1
           imagePullPolicy: Always
           resources:
             requests:
@@ -33,37 +37,47 @@ spec:
               value: "postgresql://postgres:090807@postgres:5432/CSC8113_GroupProject"
           ports:
             - containerPort: 8000
-          # envFrom:
-          #   - configMapRef:
-          #       name: bookstore-config
-          #   - secretRef:
-          #       name: bookstore-secrets
-          # env:
-          #   - name: DB_HOST
-          #     valueFrom:
-          #       configMapKeyRef:
-          #         name: bookstore-config
-          #         key: DB_HOST
-          #   - name: REDIS_HOST
-          #     valueFrom:
-          #       configMapKeyRef:
-          #         name: bookstore-config
-          #         key: REDIS_HOST
-          #   - name: JWT_SECRET
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: bookstore-secrets
-          #         key: JWT_SECRET
-          #   - name: DB_USER
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: bookstore-secrets
-          #         key: DB_USER
-          #   - name: DB_PASSWORD
-          #     valueFrom:
-          #       secretKeyRef:
-          #         name: bookstore-secrets
-          #         key: DB_PASSWORD
+
+---
+# green deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-green
+  namespace: bookstore
+  labels:
+    app: catalog-service
+    version: green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-service
+      version: green
+  template:
+    metadata:
+      labels:
+        app: catalog-service
+        version: green
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: catalog-service
+          image: prathmeshnaiknu/csc8113-group8:catalog-service-v2
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://postgres:090807@postgres:5432/CSC8113_GroupProject"
+          ports:
+            - containerPort: 8000
 
 ---
 apiVersion: v1
@@ -76,6 +90,7 @@ metadata:
 spec:
   selector:
     app: catalog-service
+    version: blue # controls which deployment receives traffic
   ports:
     - protocol: TCP
       port: 8000
