@@ -23,7 +23,7 @@ spec:
         - name: regcred
       containers:
         - name: catalog-service
-          image: prathmeshnaiknu/csc8113-group8:catalog-service-v1
+          image: gcr.io/csc8113-group8/catalog-service-v1
           imagePullPolicy: Always
           resources:
             requests:
@@ -64,7 +64,7 @@ spec:
         - name: regcred
       containers:
         - name: catalog-service
-          image: prathmeshnaiknu/csc8113-group8:catalog-service-v2
+          image: gcr.io/csc8113-group8/catalog-service-v2
           imagePullPolicy: Always
           resources:
             requests:

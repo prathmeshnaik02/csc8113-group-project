@@ -1,10 +1,3 @@
-CREATE TABLE IF NOT EXISTS users (
-    id BIGINT PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS book_inventory (
     isbn VARCHAR(255) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -27,11 +20,6 @@ CREATE TABLE IF NOT EXISTS cart_item (
     quantity INTEGER NOT NULL,
     user_id VARCHAR(255)
 );
-
-INSERT INTO
-  users (id, username, password, role)
-VALUES
-  (12345678, 'admin', '12345678', 'admin');
 
 INSERT INTO
   book_inventory (isbn, title, subtitle, author, published, publisher, pages, description, price, genre, stock_status, language, rating)

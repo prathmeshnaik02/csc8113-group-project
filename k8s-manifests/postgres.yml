@@ -14,12 +14,11 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        fsGroup: 999 # This ensures volume is writable by postgres user
       containers:
         - name: postgres
-          image: postgres:latest
-          envFrom:
-            - secretRef:
-                name: bookstore-secrets
+          image: postgres:14 # Specify a version rather than 'latest'
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -36,6 +35,8 @@ spec:
                 secretKeyRef:
                   name: bookstore-secrets
                   key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata # Use a subdirectory
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -43,6 +44,33 @@ spec:
               name: postgres-storage
             - name: init-script
               mountPath: "/docker-entrypoint-initdb.d/"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - $(POSTGRES_USER)
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - $(POSTGRES_USER)
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
         - name: init-script
           configMap:

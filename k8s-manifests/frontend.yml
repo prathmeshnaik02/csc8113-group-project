@@ -19,8 +19,8 @@ spec:
         - name: regcred
       containers:
         - name: frontend
-          image: prathmeshnaiknu/csc8113-group8:frontend
-          imagePullPolicy: Always
+          image: gcr.io/csc8113-group8/frontend
+          imagePullPolicy: IfNotPresent
 
 ---
 apiVersion: v1
