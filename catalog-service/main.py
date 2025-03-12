@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Union
 
 from database import get_db
-from fastapi import Body, Depends, FastAPI, HTTPException, Query
+from fastapi import Body, Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from models import BookInventory
 from pydantic import BaseModel
@@ -40,6 +40,10 @@ class Book(BaseModel):
     language: str
     rating: Optional[float]
     # in_stock: bool
+
+
+class HealthCheck(BaseModel):
+    status: str = "OK"
 
 
 # # Gets all books
@@ -107,6 +111,11 @@ def get_book(isbn: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Book not found")
 
     return book
+
+
+@app.get("/health", status_code=status.HTTP_200_OK, response_model=HealthCheck)
+def get_health() -> HealthCheck:
+    return HealthCheck(status="OK")
 
 
 # Allowed fields for partial update
