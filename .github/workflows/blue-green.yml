@@ -12,7 +12,7 @@ on:
       environment:
         description: "target deployment env (b/g)"
         required: false
-        defaulut: "auto"
+        default: "auto"
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -40,8 +40,9 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          cluster_name: ${{ envv.GKE_CLUSTER }}
-          location: $${{ env.GKE_ZONE }}
+          project_id: ${{ secrets.GCP_PROJECT_ID}}
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
 
       - name: determine active environment
         id: set-env
@@ -125,8 +126,9 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          cluster_name: ${{ envv.GKE_CLUSTER }}
-          location: $${{ env.GKE_ZONE }}
+          project_id: ${{ secrets.GCP_PROJECT_ID}}
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
 
       - name: create blue-green k8s manifests
         run: |
@@ -167,8 +169,8 @@ jobs:
                     httpGet:
                       path: /health
                       port: 8000
-                    initialDelaySeconds: 5
-                    periodSeconds: 5
+                    initialDelaySeconds: 20
+                    periodSeconds: 10
 
           ---
           apiVersion: v1
@@ -220,6 +222,7 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
+          project_id: ${{ secrets.GCP_PROJECT_ID}}
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
 
