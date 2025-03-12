@@ -40,9 +40,8 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
           cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GKE_ZONE }}
+          location: $${{ env.GKE_ZONE }}
 
       - name: determine active environment
         id: set-env
@@ -126,9 +125,8 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
           cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GKE_ZONE }}
+          location: $${{ env.GKE_ZONE }}
 
       - name: create blue-green k8s manifests
         run: |
@@ -222,7 +220,6 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
 
