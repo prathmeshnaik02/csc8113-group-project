@@ -52,7 +52,7 @@ public class CartController {
     }
 
     // Readiness probe endpoint
-    @GetMapping("/cart/ready")
+    @GetMapping("/ready")
     public ResponseEntity<Map<String, String>> readinessCheck() {
         Map<String, String> response = new HashMap<>();
         response.put("status", "ready");
