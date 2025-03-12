@@ -40,7 +40,7 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          cluster_name: ${{ env.GKE_CLUSTER }}
+          cluster_name: ${{ envv.GKE_CLUSTER }}
           location: $${{ env.GKE_ZONE }}
 
       - name: determine active environment
