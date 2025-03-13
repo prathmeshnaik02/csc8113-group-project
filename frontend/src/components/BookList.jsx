@@ -24,9 +24,15 @@ const BookList = ({ books }) => {
 					className="book"
 				>
 					<h3>{book.title}</h3>
-					<p>ISBN: {book.isbn}</p>
-					<p>Author: {book.author}</p>
-					<p>Price: ${book.price}</p>
+					<p>
+						<b>ISBN:</b> {book.isbn}
+					</p>
+					<p>
+						<b>Author:</b> {book.author}
+					</p>
+					<p>
+						<b>Price:</b> ${book.price}
+					</p>
 					<button onClick={() => addToCart(book.isbn)}>Add to Cart</button>
 				</div>
 			))}
