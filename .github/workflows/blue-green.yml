@@ -10,15 +10,15 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "target deployment env (b/g)"
+        description: "target deployment env (blue/green)"
         required: false
         default: "auto"
 
 env:
-  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
-  CATALOG_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/catalog:${{ github.sha }}
+  CATALOG_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/catalog-service:${{ github.sha }}
 
 jobs:
   determine-environment:
@@ -30,17 +30,22 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v3
 
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: setup google cloud cli
         uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
 
@@ -58,7 +63,6 @@ jobs:
           else
             ACTIVE_ENV=$(kubectl get service catalog-service -n bookstore -o jsonpath='{.spec.selector.version}' || echo "blue")
             echo "current active environment: $ACTIVE_ENV"
-
             if [[ "$ACTIVE_ENV" == "blue" ]]; then
               DEPLOY_ENV="green"
               INACTIVE_ENV="blue"
@@ -67,7 +71,6 @@ jobs:
               INACTIVE_ENV="green"
             fi
           fi
-
           echo "environment=$DEPLOY_ENV" >> $GITHUB_OUTPUT
           echo "inactive_env=$INACTIVE_ENV" >> $GITHUB_OUTPUT
           echo "will deploy to: $DEPLOY_ENV"
@@ -86,17 +89,22 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: setup google cloud cli
         uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
       - name: configure docker for GCR
@@ -116,101 +124,10 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v3
 
-      - name: setup google cloud cli
-        uses: google-github-actions/setup-gcloud@v1
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
         with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
-          export_default_credentials: true
-
-      - name: get GKE credentials
-        uses: google-github-actions/get-gke-credentials@v1
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
-          cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GKE_ZONE }}
-
-      - name: create blue-green k8s manifests
-        run: |
-          cat > catalog-${{ needs.determine-environment.outputs.environment }}.yml << EOF
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: catalog-${{ needs.determine-environment.outputs.environment }}
-            namespace: bookstore
-            labels:
-              app: catalog-service
-              environment: ${{ needs.determine-environment.outputs.environment }}
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: catalog-service
-                environment: ${{ needs.determine-environment.outputs.environment }}
-            template:
-              metadata:
-                labels:
-                  app: catalog-service
-                  environment: ${{ needs.determine-environment.outputs.environment }}
-              spec:
-                containers:
-                - name: catalog
-                  image: ${{ env.CATALOG_IMAGE }}
-                  ports:
-                  - containerPort: 8000
-                  resources:
-                    requests:
-                      cpu: 100m
-                      memory: 128Mi
-                    limits:
-                      cpu: 200m
-                      memory: 256Mi
-                  readinessProbe:
-                    httpGet:
-                      path: /health
-                      port: 8000
-                    initialDelaySeconds: 20
-                    periodSeconds: 10
-
-          ---
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: catalog-service
-            namespace: bookstore
-          spec:
-            selector:
-              app: catalog-service
-              environment: ${{ needs.determine-environment.outputs.environment }}
-            ports:
-            - port: 8000
-              targetPort: 8000
-            type: ClusterIP
-          EOF
-
-      - name: deploy to target environment
-        run: |
-          echo "deploying to ${{ needs.determine-environment.outputs.environment }} environment"
-          kubectl apply -f catalog-${{ needs.determine-environment.outputs.environment }}.yml
-
-      - name: wait for deployment to be ready
-        run: |
-          kubectl rollout status deployment/catalog-${{ needs.determine-environment.outputs.environment }} -n bookstore
-
-      - name: test new deployment
-        run: |
-          echo "testing new deployment before traffic switch"
-          NEW_SERVICE_IP=$(kubectl get service catalog-${{ needs.determine-environment.outputs.environment }} -n bookstore -o jsonpath='{.spec.clusterIP}')
-          kubectl run curl-test --image=curlimages/curl --rm -it --restart=Never -n bookstore -- curl -s http://$NEW_SERVICE_IP/health || echo "health check failed but continuing"
-
-  switch-traffic:
-    needs: [determine-environment, deploy]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v3
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: setup google cloud cli
         uses: google-github-actions/setup-gcloud@v1
@@ -222,14 +139,58 @@ jobs:
       - name: get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID}}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      - name: update target deployment with new image
+        run: |
+          echo "updating ${{ needs.determine-environment.outputs.environment }} deployment with new image"
+          kubectl set image deployment/catalog-${{ needs.determine-environment.outputs.environment }} catalog-service=${{ env.CATALOG_IMAGE }} -n bookstore
+
+      - name: wait for deployment to be ready
+        run: |
+          kubectl rollout status deployment/catalog-${{ needs.determine-environment.outputs.environment }} -n bookstore
+
+      - name: test new deployment
+        run: |
+          echo "testing new deployment before traffic switch"
+          # Create a temporary pod to test the new deployment
+          kubectl run curl-test --image=curlimages/curl --rm -it --restart=Never -n bookstore -- \
+            curl -s http://catalog-${{ needs.determine-environment.outputs.environment }}:8000/health || \
+            echo "health check failed but continuing"
+
+  switch-traffic:
+    needs: [determine-environment, deploy]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: setup google cloud cli
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
 
       - name: switch traffic to new environment
         run: |
           echo "switching traffic to ${{ needs.determine-environment.outputs.environment }} environment"
-          kubectl patch service catalog-service -n bookstore -p '{"spec":{"selector":{"version":"${{ needs.determine-environment.outputs.environment }}"}}}'
+          kubectl patch service catalog-service -n bookstore -p "{\"spec\":{\"selector\":{\"version\":\"${{ needs.determine-environment.outputs.environment }}\",\"app\":\"catalog-service\"}}}"
 
       - name: verify traffic switch
         run: |
