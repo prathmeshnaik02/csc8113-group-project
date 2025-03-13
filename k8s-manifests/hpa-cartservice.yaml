@@ -16,4 +16,4 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 60 # Scale up when CPU usage exceeds 60%
+          averageUtilization: 90 # Scale up when CPU usage exceeds 60%
