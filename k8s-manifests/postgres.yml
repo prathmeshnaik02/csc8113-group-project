@@ -6,8 +6,7 @@ metadata:
   name: gcp-storage
 provisioner: pd.csi.storage.gke.io # GCP persistent disk CSI driver
 parameters:
-  type: pd-standard
-  fstype: ext4
+  type: pd-balanced
 reclaimPolicy: Retain
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer
