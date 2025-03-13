@@ -92,7 +92,7 @@ jobs:
       - name: update deployment image
         run: |
           sed -i "s|image: gcr.io/.*\/frontend:.*|image: ${{ env.FRONTEND_IMAGE }}|g" k8s-manifests/frontend.yml
-          kubectl apply -f k8s-manifests/frontend.yml
+          kubectl rollout restart deployment/frontend -n bookstore
 
       - name: verify deployment
         run: |
