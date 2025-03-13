@@ -8,7 +8,7 @@ const Navbar = () => {
 				to="/"
 				className="logo"
 			>
-				Bookstore
+				Bookstore (Group 8)
 			</Link>
 			<div className="links">
 				<Link to="/">Home</Link>
