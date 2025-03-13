@@ -23,7 +23,7 @@ spec:
         - name: regcred
       containers:
         - name: catalog-service
-          image: gcr.io/csc8113-group8/catalog-service-v1
+          image: gcr.io/csc8113-group8/catalog-service:latest
           imagePullPolicy: Always
           resources:
             requests:
@@ -37,6 +37,12 @@ spec:
               value: "postgresql://postgres:090807@postgres:5432/CSC8113_GroupProject"
           ports:
             - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
 
 ---
 # green deployment
@@ -64,7 +70,7 @@ spec:
         - name: regcred
       containers:
         - name: catalog-service
-          image: gcr.io/csc8113-group8/catalog-service-v2
+          image: gcr.io/csc8113-group8/catalog-service:latest
           imagePullPolicy: Always
           resources:
             requests:
@@ -78,6 +84,12 @@ spec:
               value: "postgresql://postgres:090807@postgres:5432/CSC8113_GroupProject"
           ports:
             - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
 
 ---
 apiVersion: v1
