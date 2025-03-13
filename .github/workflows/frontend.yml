@@ -41,6 +41,11 @@ jobs:
       - name: build application
         run: npm run build
 
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
       - name: setup google cloud cli
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -64,6 +69,11 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v3
+
+      - name: authenticate to google cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: setup google cloud cli
         uses: google-github-actions/setup-gcloud@v1
