@@ -20,7 +20,7 @@ spec:
       containers:
         - name: frontend
           image: gcr.io/csc8113-group8/frontend
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 apiVersion: v1
