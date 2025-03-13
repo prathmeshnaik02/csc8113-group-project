@@ -1,3 +1,19 @@
+# StorageClass for Google persistent disk
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gcp-storage
+provisioner: pd.csi.storage.gke.io # GCP persistent disk CSI driver
+parameters:
+  type: pd-standard
+  fstype: ext4
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+
+# postgres StatefulSet with PersistentVolumeClaim
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -15,10 +31,10 @@ spec:
         app: postgres
     spec:
       securityContext:
-        fsGroup: 999 # This ensures volume is writable by postgres user
+        fsGroup: 999 # this ensures volume is writable by postgres user
       containers:
         - name: postgres
-          image: postgres:14 # Specify a version rather than 'latest'
+          image: postgres:14
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -36,7 +52,7 @@ spec:
                   name: bookstore-secrets
                   key: POSTGRES_PASSWORD
             - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata # Use a subdirectory
+              value: /var/lib/postgresql/data/pgdata
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -79,7 +95,8 @@ spec:
     - metadata:
         name: postgres-storage
       spec:
-        accessModes: [ReadWriteOnce]
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gcp-storage # use GCP persistent disk
         resources:
           requests:
             storage: 3Gi
