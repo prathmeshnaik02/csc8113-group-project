@@ -260,3 +260,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+# extras
+*key.json
