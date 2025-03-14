@@ -27,7 +27,7 @@ public class CartService {
         CartItem newItem = new CartItem();
         newItem.setUserId(userId);
         newItem.setBookIsbn(bookIsbn);
-        newItem.setQuantity(99999);
+        newItem.setQuantity(999999);
         return cartRepository.save(newItem);
     }
 
