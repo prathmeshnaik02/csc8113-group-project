@@ -61,11 +61,11 @@ spec:
               mountPath: "/docker-entrypoint-initdb.d/"
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
               memory: "1Gi"
               cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "2500m"
           livenessProbe:
             exec:
               command:
