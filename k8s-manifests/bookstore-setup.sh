@@ -31,7 +31,6 @@ kubectl apply -f secrets.yml
 kubectl create configmap postgres-init-script \
     --from-file=./postgres/init.sql -n bookstore
 kubectl apply -f postgres.yml
-kubectl apply -f redis.yml
 
 # deploy the catalog and cart services
 kubectl apply -f catalog-service.yml
