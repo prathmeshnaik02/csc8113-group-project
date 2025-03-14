@@ -9,9 +9,9 @@ let successRate = new Rate("success_rate");
 export let options = {
 	stages: [
 		{ duration: "1m", target: 100 }, // ramp-up to 100 users
-		{ duration: "2m", target: 300 }, // ramp-up to 300 users
-		{ duration: "2m", target: 500 }, // ramp-up to 500 users
-		{ duration: "3m", target: 500 }, // sustain 500 users
+		{ duration: "1m", target: 250 }, // ramp-up to 250 users
+		{ duration: "1m", target: 500 }, // ramp-up to 500 users
+		{ duration: "5m", target: 500 }, // sustain 500 users
 		{ duration: "1m", target: 0 }, // ramp-down to 0 users
 	],
 	thresholds: {
