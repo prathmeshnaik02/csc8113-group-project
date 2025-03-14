@@ -1,0 +1,419 @@
+{
+	"title": "Bookstore Microservices",
+	"time": {
+		"from": "now-1h",
+		"to": "now"
+	},
+	"panels": [
+		{
+			"title": "Overview Metrics",
+			"type": "row",
+			"gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+			"collapsed": false
+		},
+		{
+			"title": "CPU Usage",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 0, "y": 1 },
+			"targets": [
+				{
+					"expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"bookstore\", container!=\"\"}[1m])) by (container)",
+					"format": "time_series",
+					"legendFormat": "{{container}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Memory Usage (GB)",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 12, "y": 1 },
+			"targets": [
+				{
+					"expr": "sum(container_memory_usage_bytes{namespace=\"bookstore\", container!=\"\"}) by (container) / (1024 ^ 3)",
+					"format": "time_series",
+					"legendFormat": "{{container}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Frontend Service",
+			"type": "row",
+			"gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+			"collapsed": false
+		},
+		{
+			"title": "CPU Usage",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 0, "y": 12 },
+			"targets": [
+				{
+					"expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"bookstore\", container=\"frontend\"}[1m])) by (pod)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Memory Usage (GB)",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 12, "y": 12 },
+			"targets": [
+				{
+					"expr": "sum(container_memory_usage_bytes{namespace=\"bookstore\", container=\"frontend\"}) by (pod) / (1024 ^ 3)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Catalog Service",
+			"type": "row",
+			"gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 },
+			"collapsed": false
+		},
+		{
+			"title": "CPU Usage",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 0, "y": 23 },
+			"targets": [
+				{
+					"expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"bookstore\", container=\"catalog-service\"}[1m])) by (pod)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Memory Usage (GB)",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 12, "y": 23 },
+			"targets": [
+				{
+					"expr": "sum(container_memory_usage_bytes{namespace=\"bookstore\", container=\"catalog-service\"}) by (pod) / (1024 ^ 3)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Cart Service",
+			"type": "row",
+			"gridPos": { "h": 1, "w": 24, "x": 0, "y": 33 },
+			"collapsed": false
+		},
+		{
+			"title": "CPU Usage",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 0, "y": 34 },
+			"targets": [
+				{
+					"expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"bookstore\", container=\"cartservice\"}[1m])) by (pod)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Memory Usage (GB)",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 12, "y": 34 },
+			"targets": [
+				{
+					"expr": "sum(container_memory_usage_bytes{namespace=\"bookstore\", container=\"cartservice\"}) by (pod) / (1024 ^ 3)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Postgres",
+			"type": "row",
+			"gridPos": { "h": 1, "w": 24, "x": 0, "y": 45 },
+			"collapsed": false
+		},
+		{
+			"title": "CPU Usage",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 0, "y": 46 },
+			"targets": [
+				{
+					"expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"bookstore\", container=\"postgres\"}[1m])) by (pod)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		},
+		{
+			"title": "Memory Usage (GB)",
+			"type": "graph",
+			"gridPos": { "h": 10, "w": 12, "x": 12, "y": 46 },
+			"targets": [
+				{
+					"expr": "sum(container_memory_usage_bytes{namespace=\"bookstore\", container=\"postgres\"}) by (pod) / (1024 ^ 3)",
+					"format": "time_series",
+					"legendFormat": "{{pod}}",
+					"interval": "5s"
+				}
+			],
+			"lines": true,
+			"points": false,
+			"bars": false,
+			"stack": false,
+			"options": {
+				"graph": {
+					"mode": "line"
+				},
+				"tooltip": {
+					"mode": "multi",
+					"sort": "none"
+				}
+			},
+			"fieldConfig": {
+				"defaults": {
+					"custom": {
+						"drawStyle": "line",
+						"lineInterpolation": "linear",
+						"barAlignment": 0,
+						"lineWidth": 1,
+						"fillOpacity": 0,
+						"showPoints": "never"
+					}
+				}
+			}
+		}
+	]
+}
