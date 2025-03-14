@@ -59,22 +59,22 @@ spec:
                   key: DB_PASSWORD
           ports:
             - containerPort: 8001
-          # livenessProbe:
-          #   httpGet:
-          #     path: /cart/health
-          #     port: 8001
-          #     scheme: HTTP
-          #   initialDelaySeconds: 30
-          #   periodSeconds: 30
-          #   failureThreshold: 3
-          # readinessProbe:
-          #   httpGet:
-          #     path: /cart/ready
-          #     port: 8001
-          #     scheme: HTTP
-          #   initialDelaySeconds: 30
-          #   periodSeconds: 30
-          #   failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /cart/health
+              port: 8001
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /cart/ready
+              port: 8001
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
 
 ---
 apiVersion: v1
