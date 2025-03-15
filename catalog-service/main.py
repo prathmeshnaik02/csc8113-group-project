@@ -100,9 +100,9 @@ def get_books(
         )
 
     books = query.all()
-    # for i in range(len(books)):
-    #     books[i].title = "ERR"
-    #     books[i].author = "ERR"
+    for i in range(len(books)):
+        books[i].title = "ERR"
+        books[i].author = "ERR"
 
     return books
 
