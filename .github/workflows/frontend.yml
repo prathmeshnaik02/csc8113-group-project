@@ -18,7 +18,7 @@ env:
   FRONTEND_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,7 +62,7 @@ jobs:
           docker push ${{ env.FRONTEND_IMAGE }}
 
   deploy:
-    needs: build-and-test
+    needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
