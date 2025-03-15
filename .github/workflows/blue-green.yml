@@ -237,15 +237,15 @@ jobs:
 
       - name: switch traffic back to previous environment
         run: |
-          echo "rolling back: switching traffic to ${{ needs.determine-environment.outputs.inactive_env }} environment"
-          kubectl patch service catalog-service -n bookstore -p "{\"spec\":{\"selector\":{\"version\":\"${{ needs.determine-environment.outputs.inactive_env }}\",\"app\":\"catalog-service\"}}}"
+          echo "rolling back: switching traffic to ${{ needs.determine-environment.outputs.environment }} environment"
+          kubectl patch service catalog-service -n bookstore -p "{\"spec\":{\"selector\":{\"version\":\"${{ needs.determine-environment.outputs.environment }}\",\"app\":\"catalog-service\"}}}"
 
       - name: verify rollback
         run: |
-          echo "verifying rollback to ${{ needs.determine-environment.outputs.inactive_env }}"
+          echo "verifying rollback to ${{ needs.determine-environment.outputs.environment }}"
           CURRENT_TARGET=$(kubectl get service catalog-service -n bookstore -o jsonpath='{.spec.selector.version}')
-          if [[ "$CURRENT_TARGET" == "${{ needs.determine-environment.outputs.inactive_env }}" ]]; then
-            echo "rollback successful! traffic is now directed to ${{ needs.determine-environment.outputs.inactive_env }}"
+          if [[ "$CURRENT_TARGET" == "${{ needs.determine-environment.outputs.environment }}" ]]; then
+            echo "rollback successful! traffic is now directed to ${{ needs.determine-environment.outputs.environment }}"
           else
             echo "rollback verification failed"
             exit 1
