@@ -64,7 +64,7 @@ spec:
               path: /cart/health
               port: 8001
               scheme: HTTP
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
             periodSeconds: 30
             failureThreshold: 5
           readinessProbe:
@@ -72,7 +72,7 @@ spec:
               path: /cart/ready
               port: 8001
               scheme: HTTP
-            initialDelaySeconds: 60
+            initialDelaySeconds: 25
             periodSeconds: 30
             failureThreshold: 5
 
