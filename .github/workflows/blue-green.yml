@@ -211,7 +211,7 @@ jobs:
   rollback:
     needs: [determine-environment]
     runs-on: ubuntu-latest
-    if: github.event.inputs.action == 'rollback' || failure()
+    if: github.event.inputs.action == 'rollback' # || failure()
     steps:
       - name: checkout repository
         uses: actions/checkout@v3
