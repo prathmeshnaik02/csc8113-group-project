@@ -9,7 +9,8 @@ metadata:
 spec:
   ingressClassName: "nginx"
   rules:
-    - http:
+    - host: csc8113-group8.csproject.org
+      http:
         paths:
           - path: /api/catalog/(.*)
             pathType: ImplementationSpecific
