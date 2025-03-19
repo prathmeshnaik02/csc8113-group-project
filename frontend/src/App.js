@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import BookList from "./components/BookList";
 import Cart from "./components/Cart";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HeaderFooter from "./components/HeaderFooter"; // m Import HeaderFooter component
 import "./App.css";
 
 function App() {
@@ -106,6 +107,7 @@ function App() {
 	return (
 		<Router>
 			<div className="App">
+				<HeaderFooter /> {/* m Includes combined HeaderFooter component */}
 				<Navbar cartCount={cartItems.length} />
 				<Routes>
 					<Route
