@@ -4,20 +4,23 @@
 
 ### Enable the Kubernetes Engine and Container Registry APIs
 
+```sh
 gcloud services enable \
- containerregistry.googleapis.com \
- container.googleapis.com
+  containerregistry.googleapis.com \
+  container.googleapis.com
+```
 
 ### Create cluster
 
 ```sh
 gcloud container clusters create bookstore-cluster \
- --num-nodes=3 \
- --zone=europe-north2-a \
- --enable-autoscaling \
- --min-nodes=1 \
- --max-nodes=5 \
- --enable-ip-alias
+  --num-nodes=3 \
+  --zone=europe-north2-a \
+  --enable-autoscaling \
+  --min-nodes=1 \
+  --max-nodes=5 \
+  --enable-ip-alias \
+  --disk-size=50GB
 ```
 
 **Note**: `--zone` can be excluded if a default zone has been set up.
